@@ -1,0 +1,23 @@
+{
+  "name": "Void Hunter #8",
+  "description": "Void Hunter is a unique game character from the ERC-1155 NFT collection.",
+  "image": "ipfs://bafybeige66a4mzl6twou6xvr3dyt7mtharh6fql4du72vhlmxrhphk6u24/character-8.svg",
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Black"
+    },
+    {
+      "trait_type": "Speed",
+      "value": 8
+    },
+    {
+      "trait_type": "Strength",
+      "value": 8
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Epic"
+    }
+  ]
+}

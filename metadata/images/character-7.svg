@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#584019"/>
+  <circle cx="300" cy="260" r="175" fill="#ffe18a" opacity="0.12"/>
+  <circle cx="300" cy="260" r="135" fill="none" stroke="#ffe18a" stroke-width="3"/>
+  <path d="M300 90 L470 260 L300 430 L130 260 Z" fill="none" stroke="#ffe18a" stroke-width="2" opacity="0.6"/>
+  <text x="300" y="295" text-anchor="middle" fill="#ffe18a" font-family="Arial" font-size="105" font-weight="bold">SP</text>
+  <text x="300" y="495" text-anchor="middle" fill="white" font-family="Arial" font-size="31" font-weight="bold">Solar Priest</text>
+  <text x="300" y="535" text-anchor="middle" fill="#ffe18a" font-family="Arial" font-size="18">GAME CHARACTER #07</text>
+</svg>

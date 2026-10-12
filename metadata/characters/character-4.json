@@ -1,0 +1,23 @@
+{
+  "name": "Forest Guardian #4",
+  "description": "Forest Guardian is a unique game character from the ERC-1155 NFT collection.",
+  "image": "ipfs://bafybeige66a4mzl6twou6xvr3dyt7mtharh6fql4du72vhlmxrhphk6u24/character-4.svg",
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Green"
+    },
+    {
+      "trait_type": "Speed",
+      "value": 5
+    },
+    {
+      "trait_type": "Strength",
+      "value": 9
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Rare"
+    }
+  ]
+}

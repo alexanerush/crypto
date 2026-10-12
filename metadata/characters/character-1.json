@@ -1,0 +1,23 @@
+{
+  "name": "Shadow Knight #1",
+  "description": "Shadow Knight is a unique game character from the ERC-1155 NFT collection.",
+  "image": "ipfs://bafybeige66a4mzl6twou6xvr3dyt7mtharh6fql4du72vhlmxrhphk6u24/character-1.svg",
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Black"
+    },
+    {
+      "trait_type": "Speed",
+      "value": 7
+    },
+    {
+      "trait_type": "Strength",
+      "value": 9
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Legendary"
+    }
+  ]
+}

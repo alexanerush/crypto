@@ -1,0 +1,23 @@
+{
+  "name": "Student Visit Card #1",
+  "description": "A unique soulbound NFT student visit card for the Blockchain Development course. This NFT cannot be transferred.",
+  "image": "ipfs://bafybeige66a4mzl6twou6xvr3dyt7mtharh6fql4du72vhlmxrhphk6u24/student-card.svg",
+  "attributes": [
+    {
+      "trait_type": "Student Name",
+      "value": "Sasha"
+    },
+    {
+      "trait_type": "Student ID",
+      "value": "STU001"
+    },
+    {
+      "trait_type": "Course",
+      "value": "Blockchain Development"
+    },
+    {
+      "trait_type": "Token Type",
+      "value": "Soulbound"
+    }
+  ]
+}

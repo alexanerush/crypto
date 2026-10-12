@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#123954"/>
+  <circle cx="300" cy="260" r="175" fill="#74ddff" opacity="0.12"/>
+  <circle cx="300" cy="260" r="135" fill="none" stroke="#74ddff" stroke-width="3"/>
+  <path d="M300 90 L470 260 L300 430 L130 260 Z" fill="none" stroke="#74ddff" stroke-width="2" opacity="0.6"/>
+  <text x="300" y="295" text-anchor="middle" fill="#74ddff" font-family="Arial" font-size="105" font-weight="bold">FM</text>
+  <text x="300" y="495" text-anchor="middle" fill="white" font-family="Arial" font-size="31" font-weight="bold">Frost Mage</text>
+  <text x="300" y="535" text-anchor="middle" fill="#74ddff" font-family="Arial" font-size="18">GAME CHARACTER #02</text>
+</svg>

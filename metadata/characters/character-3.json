@@ -1,0 +1,23 @@
+{
+  "name": "Flame Archer #3",
+  "description": "Flame Archer is a unique game character from the ERC-1155 NFT collection.",
+  "image": "ipfs://bafybeige66a4mzl6twou6xvr3dyt7mtharh6fql4du72vhlmxrhphk6u24/character-3.svg",
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Speed",
+      "value": 9
+    },
+    {
+      "trait_type": "Strength",
+      "value": 7
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Epic"
+    }
+  ]
+}

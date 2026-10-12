@@ -1,0 +1,23 @@
+{
+  "name": "Storm Assassin #5",
+  "description": "Storm Assassin is a unique game character from the ERC-1155 NFT collection.",
+  "image": "ipfs://bafybeige66a4mzl6twou6xvr3dyt7mtharh6fql4du72vhlmxrhphk6u24/character-5.svg",
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Purple"
+    },
+    {
+      "trait_type": "Speed",
+      "value": 10
+    },
+    {
+      "trait_type": "Strength",
+      "value": 6
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Legendary"
+    }
+  ]
+}

@@ -1,10 +1,20 @@
-
 import { configVariable, defineConfig } from "hardhat/config";
 import hardhatToolboxMochaEthers from "@nomicfoundation/hardhat-toolbox-mocha-ethers";
 
 export default defineConfig({
   plugins: [hardhatToolboxMochaEthers],
-  solidity: "0.8.24",
+
+  solidity: {
+    version: "0.8.26",
+    settings: {
+      evmVersion: "cancun",
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
+
   networks: {
     hardhatMainnet: {
       type: "edr-simulated",

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#12475a"/>
+  <circle cx="300" cy="260" r="175" fill="#81e9f1" opacity="0.12"/>
+  <circle cx="300" cy="260" r="135" fill="none" stroke="#81e9f1" stroke-width="3"/>
+  <path d="M300 90 L470 260 L300 430 L130 260 Z" fill="none" stroke="#81e9f1" stroke-width="2" opacity="0.6"/>
+  <text x="300" y="295" text-anchor="middle" fill="#81e9f1" font-family="Arial" font-size="105" font-weight="bold">OS</text>
+  <text x="300" y="495" text-anchor="middle" fill="white" font-family="Arial" font-size="31" font-weight="bold">Ocean Samurai</text>
+  <text x="300" y="535" text-anchor="middle" fill="#81e9f1" font-family="Arial" font-size="18">GAME CHARACTER #09</text>
+</svg>
