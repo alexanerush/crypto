@@ -1,191 +1,225 @@
-# Assignment 3 — Ethereum Blockchain Fundamentals
+# Assignment 6 — ERC-20 Token Development and Deployment
 
-**Network:** Ethereum Sepolia Testnet  
-**Tools:** MetaMask, ETH.Build, Chainlist, Google Cloud Web3 Faucet, Sepolia Etherscan
+## 1. Objective
 
----
+The objective of this assignment is to create, deploy, and test an ERC-20 token using Solidity, Hardhat, and the OpenZeppelin library.
 
-## 1. Wallet
+The project demonstrates token creation, initial token distribution, transfers between accounts, balance management, and access-controlled token minting.
 
-MetaMask was installed and configured to create and manage Ethereum accounts.
+## 2. Technologies Used
 
-The ETH.Build visual environment was used to explore the process of generating an Ethereum address from a mnemonic phrase, including private and public key derivation.
+- **Solidity 0.8.34** — smart contract programming language.
+- **Hardhat 3** — smart contract development and testing framework.
+- **OpenZeppelin Contracts** — implementation of the ERC-20 standard and ownership management.
+- **TypeScript** — deployment scripts and automated tests.
+- **Ethers.js** — blockchain interactions.
+- **Mocha and Chai** — automated testing.
+- **MetaMask** — Ethereum wallet.
+- **Alchemy** — Ethereum Sepolia RPC provider.
+- **Sepolia Etherscan** — blockchain explorer.
 
-**MetaMask Account 1:**
+## 3. ERC-20 Token Implementation
+
+The smart contract `MyToken.sol` was implemented using OpenZeppelin's `ERC20` and `Ownable` contracts.
+
+Token properties:
+
+| Property | Value |
+|---|---|
+| Token name | MyToken |
+| Token symbol | MTK |
+| Standard | ERC-20 |
+| Decimals | 18 |
+| Initial supply | 1,000,000 MTK |
+| Network | Ethereum Sepolia Testnet |
+
+The constructor accepts an initial supply and assigns all initially minted tokens to the deployer's address.
+
+### Main Functions
+
+**constructor(uint256 initialSupply)**
+
+Initializes the ERC-20 token and mints the initial supply to the contract deployer.
+
+**transfer(address to, uint256 amount)**
+
+Transfers tokens from the sender to another Ethereum address.
+
+**balanceOf(address account)**
+
+Returns the token balance of a specified address.
+
+**totalSupply()**
+
+Returns the total number of tokens in circulation.
+
+**mint(address to, uint256 amount)**
+
+Creates additional tokens and assigns them to the specified address.
+
+The `mint()` function uses OpenZeppelin's `onlyOwner` modifier, ensuring that only the contract owner can mint new tokens.
+
+## 4. Project Setup
+
+The project was initialized using Node.js, npm, and Hardhat.
+
+OpenZeppelin Contracts was installed using:
+
+```bash
+npm install @openzeppelin/contracts
+```
+
+The Solidity smart contract was compiled using:
+
+```bash
+npx hardhat compile
+```
+
+**Compilation result:** Successful.
+
+## 5. Local Deployment
+
+A TypeScript deployment script was created:
+
+`scripts/deploy-token.ts`
+
+The script deploys the `MyToken` contract with an initial supply of 1,000,000 MTK.
+
+The contract was first deployed to a local Hardhat network using:
+
+```bash
+npx hardhat run scripts/deploy-token.ts
+```
+
+The deployment successfully returned:
+
+```text
+Token name: MyToken
+Token symbol: MTK
+Total supply: 1000000.0
+```
+
+## 6. Automated Testing
+
+Automated tests were implemented in:
+
+`test/MyToken.ts`
+
+The following scenarios were tested:
+
+1. **Initial supply:** Verifies that the deployer receives the initial token supply.
+2. **Token transfers:** Verifies that tokens can be transferred between accounts.
+3. **Owner minting:** Verifies that the owner can create additional tokens.
+4. **Unauthorized minting:** Verifies that non-owners cannot mint tokens.
+5. **Insufficient balance:** Verifies that transfers exceeding the sender's balance are rejected.
+
+Tests were executed using:
+
+```bash
+npx hardhat test
+```
+
+After updating the assertions for Hardhat 3 compatibility, the tests completed successfully.
+
+The project also includes the default Hardhat example tests.
+
+## 7. Sepolia Testnet Deployment
+
+The ERC-20 token was successfully deployed to the Ethereum Sepolia test network.
+
+Deployment command:
+
+```bash
+npx hardhat run scripts/deploy-token.ts --network sepolia
+```
+
+**Deployment details:**
+
+| Property | Value |
+|---|---|
+| Network | Sepolia Testnet |
+| Contract | MyToken |
+| Token symbol | MTK |
+| Initial supply | 1,000,000 MTK |
+| Deployment status | Successful |
+
+**Contract address:**
+
+`0x280E6c9D4907121181EaDf81F1070B8E7ABA09E4`
+
+**Deployer address:**
 
 `0xB631f3a41bb22286bB1Ceb327726DdFe05BAA3f1`
 
-**MetaMask Account 2:**
+**Block Explorer:**
 
-`0xf6a583b7fF0dc7682BCFA48016571e03d3b214d1`
+https://sepolia.etherscan.io/address/0x280E6c9D4907121181EaDf81F1070B8E7ABA09E4
 
-For security reasons, mnemonic phrases and private keys are not published.
+A screenshot of the deployed contract on Sepolia Etherscan is provided as evidence of deployment.
 
----
+## 8. Project Structure
 
-## 2. Chains
+```text
+contracts/
+  MyToken.sol
 
-Ethereum was selected as the main blockchain, and Sepolia was used as the test network.
+scripts/
+  deploy-token.ts
 
-Sepolia was configured in MetaMask. Test ETH was obtained through Google Cloud Web3 Faucet.
+test/
+  MyToken.ts
 
-**Incoming transaction:**
+hardhat.config.ts
+package.json
+package-lock.json
+tsconfig.json
+README.md
+```
 
-https://sepolia.etherscan.io/tx/0xfd71997c5a6ed6ea108d29c46011fac86e08bf168eb06f3c0f360083a1f2c5c2
+Additional example files generated by Hardhat are also included.
 
-**Amount received:** 0.05 Sepolia ETH  
-**Status:** Success
+## 9. How to Run the Project
 
-The transaction was verified using Sepolia Etherscan.
+Install dependencies:
 
----
+```bash
+npm install
+```
 
-## 3. Transactions
+Compile the contracts:
 
-A second MetaMask account was created to test transfers between Ethereum addresses.
+```bash
+npx hardhat compile
+```
 
-**Sender:** Account 1  
-**Receiver:** Account 2  
-**Amount:** 0.005 Sepolia ETH  
-**Status:** Success
+Run automated tests:
 
-**Transaction link:**
+```bash
+npx hardhat test
+```
 
-https://sepolia.etherscan.io/tx/0xdef3abc4ae451bba1640eddd5150eddc96c7b55a8f8e097ca16a8b0776f134cf
+Deploy locally:
 
-The transaction details were reviewed in MetaMask and Sepolia Etherscan.
+```bash
+npx hardhat run scripts/deploy-token.ts
+```
 
-The following parameters were examined:
+Deploy to Sepolia:
 
-- Transaction Hash
-- From and To addresses
-- Transaction Value
-- Gas Price
-- Gas Limit
-- Gas Used
-- Transaction Fee
-- Transaction Status
+```bash
+npx hardhat run scripts/deploy-token.ts --network sepolia
+```
 
-Both interfaces provided information about the same blockchain transaction.
+Sepolia deployment requires a configured RPC endpoint, a wallet private key stored securely using Hardhat configuration variables, and sufficient Sepolia test ETH.
 
----
+## 10. Conclusion
 
-## 4. Gas
+Assignment 6 was completed successfully.
 
-The purpose of this experiment was to investigate how gas settings affect Ethereum transaction fees.
+An ERC-20 token named MyToken (MTK) was implemented using Solidity and OpenZeppelin. The contract supports standard ERC-20 transfers, balance queries, and owner-restricted token minting.
 
-MetaMask provides different fee options: Low, Market, Aggressive, and Advanced.
+The contract was compiled and deployed locally, and automated tests were performed to validate its functionality and access restrictions.
 
-### Experiment 1 — Zero Gas Fees
+Finally, MyToken was successfully deployed to the Ethereum Sepolia test network with an initial supply of 1,000,000 MTK.
 
-An attempt was made to set the gas fees to zero using the Advanced settings.
-
-MetaMask rejected these values and displayed validation errors:
-
-- Max base fee must be greater than 0.
-- Priority fee must be greater than 0.
-
-Therefore, the transaction could not be submitted with zero fees.
-
-### Experiment 2 — Low Gas Price
-
-A transaction of 0.0001 Sepolia ETH was performed with a reduced priority fee.
-
-**Results:**
-
-- Gas Price: 0.100000012 Gwei
-- Gas Limit: 31,500
-- Gas Used: 21,000
-- Transaction Fee: 0.000002100000252 ETH
-- Status: Success
-
-**Transaction link:**
-
-https://sepolia.etherscan.io/tx/0x78503df9e2532b1b1c3ebe36647f543556bb87b2067a5e18fc7ca7dbe475e88b
-
-### Experiment 3 — Higher Gas Price
-
-Another transaction of 0.0001 Sepolia ETH was performed using a higher priority fee.
-
-**Results:**
-
-- Gas Price: 1.500000012 Gwei
-- Gas Limit: 31,500
-- Gas Used: 21,000
-- Transaction Fee: 0.000031500000252 ETH
-- Status: Success
-
-### Gas Fee Comparison
-
-| Parameter | Low Gas Price | Higher Gas Price |
-|---|---|---|
-| Transfer Amount | 0.0001 ETH | 0.0001 ETH |
-| Gas Price | 0.100000012 Gwei | 1.500000012 Gwei |
-| Gas Limit | 31,500 | 31,500 |
-| Gas Used | 21,000 | 21,000 |
-| Transaction Fee | 0.000002100000252 ETH | 0.000031500000252 ETH |
-| Status | Success | Success |
-
-**Formula:**
-
-Transaction Fee = Gas Used × Gas Price
-
-The transaction with the higher gas price required approximately 15 times more ETH in transaction fees.
-
-However, the gas usage remained unchanged at 21,000 units.
-
-This demonstrates that gas price directly affects the transaction fee, while gas usage depends on the operation being executed.
-
-Both transactions were successfully confirmed.
-
-### Gas Trackers
-
-**Ethereum Mainnet Gas Tracker:**
-
-https://etherscan.io/gastracker
-
-**Sepolia Blockchain Explorer:**
-
-https://sepolia.etherscan.io/
-
----
-
-## 5. Nonce
-
-Nonce is a sequential number assigned to transactions sent from an Ethereum account.
-
-It ensures that transactions from the same account are processed in the correct order and helps prevent transaction replay.
-
-During transaction analysis, nonce values were inspected using Sepolia Etherscan.
-
-**Observed results:**
-
-- Account 2 transaction: Nonce 0
-- Account 1 transaction: Nonce 1
-
-Both transactions were successfully confirmed.
-
-The experiment involving a deliberately skipped nonce and two dependent pending transactions has not yet been completed. The required transaction links and MetaMask Activity Log screenshots therefore remain outstanding.
-
----
-
-## Conclusion
-
-During Assignment 3, the fundamental concepts of Ethereum blockchain technology were explored.
-
-The practical work included:
-
-- Creating and managing Ethereum accounts using MetaMask.
-- Exploring cryptographic key and address generation using ETH.Build.
-- Configuring the Sepolia Testnet.
-- Receiving test ETH from a faucet.
-- Transferring ETH between two accounts.
-- Inspecting blockchain transactions using Sepolia Etherscan.
-- Experimenting with different gas prices.
-- Analyzing transaction fees and nonce values.
-
-The experiments demonstrated how blockchain transactions are created, validated, and recorded, as well as how network fees are calculated.
-
-All transactions were performed using test ETH on the Ethereum Sepolia Testnet.
-
-**Remaining assignment requirements:** verification of account restoration after reinstalling MetaMask, the nonce-gap experiment with two transaction links and Activity Log screenshots, and the higher-gas-price transaction link.
+The deployed contract is publicly accessible through Sepolia Etherscan.
