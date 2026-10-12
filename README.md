@@ -1,41 +1,95 @@
-# Assignment 7 — Upgradeable ERC-20 Token
+# Assignment 8 — Multi-Signature Wallet
 
 ## 1. Overview
 
-This project implements an upgradeable ERC-20 token using Solidity, OpenZeppelin Contracts, and Hardhat 3.
+This project implements a multi-signature (multisig) wallet using Solidity, Hardhat 3, TypeScript, and Ethers.js.
 
-The main objective is to demonstrate how a UUPS upgradeable smart contract works with an ERC-1967 proxy and how its implementation can be upgraded from V1 to V2 without changing the proxy address or losing token balances.
+A multisignature wallet requires approval from multiple authorized owners before a transaction can be executed. This reduces reliance on a single account and provides additional protection for shared funds, decentralized finance (DeFi), and blockchain governance.
 
-The project includes smart contract development, local deployment, token transfers, automated testing, and deployment to the Ethereum Sepolia test network.
+The wallet supports multiple owners, a configurable confirmation threshold, transaction submission, confirmation, confirmation revocation, and execution of Ether transfers after the required approvals have been collected.
 
-## 2. Technologies
+The project includes smart contract implementation, automated testing, deployment, interaction instructions, and security analysis.
+
+## 2. Research and Planning
+
+### 2.1. Multi-Signature Wallets in DeFi and Governance
+
+A multi-signature wallet is a smart contract wallet controlled by multiple authorized owners. Instead of allowing one account to execute every transaction independently, the wallet requires a predefined number of distinct owner approvals.
+
+Multisig wallets can be used for:
+
+- Managing shared funds and project treasuries.
+- Protecting organizational and DAO assets.
+- Requiring multiple approvals for administrative operations.
+- Reducing the risks associated with a compromised individual account.
+
+A confirmation threshold determines how many owners must approve a transaction. For example, a wallet with three owners and a threshold of two requires at least two distinct owners to confirm a transaction before execution.
+
+### 2.2. Review of Existing Solutions
+
+**Safe Smart Account (formerly Gnosis Safe)**
+
+Safe is an established smart account solution with multisignature functionality. Its architecture uses a list of owners and a configurable threshold of required confirmations. It also supports more advanced features, including owner management, modules, and flexible transaction execution.
+
+This project adopts the fundamental owner-based authorization and threshold-approval principles, while implementing a smaller and simpler feature set.
+
+Documentation: https://docs.safe.global/advanced/smart-account-overview
+
+**Gnosis MultiSigWallet**
+
+The original Gnosis MultiSigWallet repository provides an open-source example of a wallet in which multiple parties must approve transactions before execution. Its implementation includes transaction submission, confirmation, revocation, execution, owner validation, and event logging.
+
+The repository is archived and has been superseded by newer Safe implementations. It remains a useful reference for understanding the basic multisignature transaction lifecycle.
+
+Source code: https://github.com/gnosis/MultiSigWallet
+
+**ConsenSys MultiSigWallet**
+
+The ConsenSysMesh MultiSigWallet repository provides an additional reference implementation of an Ethereum multisignature wallet, including a version with a daily spending limit.
+
+Source code: https://github.com/ConsenSysMesh/MultiSigWallet
+
+### 2.3. Design Decisions
+
+Based on these common multisignature patterns, this project implements:
+
+- A fixed list of owners defined during deployment.
+- A configurable minimum confirmation threshold.
+- Separate transaction submission, confirmation, revocation, and execution stages.
+- Access control restricting wallet operations to authorized owners.
+- Event logging for important wallet operations.
+- Validation of owner addresses and confirmation thresholds.
+
+The implementation focuses on the core multisignature mechanism rather than reproducing the advanced functionality of production wallets.
+
+## 3. Technologies
 
 - Solidity 0.8.24
 - Hardhat 3
 - TypeScript
 - Ethers.js
-- OpenZeppelin Contracts
-- ERC-20
-- UUPS upgradeability pattern
-- ERC-1967 Proxy
-- Mocha and Chai
+- Mocha
+- Chai
+- Ethereum Virtual Machine (EVM)
 
-## 3. Project Structure
+## 4. Project Structure
 
 ```text
-Assignment-7/
+crypto/
 ├── contracts/
+│   ├── MultiSigWallet.sol
+│   ├── MyTokenProxy.sol
 │   ├── MyTokenV1.sol
-│   ├── MyTokenV2.sol
-│   └── MyTokenProxy.sol
+│   └── MyTokenV2.sol
 ├── scripts/
+│   ├── deploy-multisig.ts
 │   ├── deploy.ts
 │   ├── transfer.ts
 │   ├── upgrade.ts
 │   └── verify-upgrade.ts
 ├── test/
+│   ├── MultiSigWallet.ts
 │   └── UpgradeableToken.ts
-├── screenshots/
 ├── hardhat.config.ts
 ├── package.json
 ├── package-lock.json
@@ -43,146 +97,247 @@ Assignment-7/
 └── README.md
 ```
 
-## 4. Smart Contracts
+`MultiSigWallet.sol`, `MultiSigWallet.ts`, and `deploy-multisig.ts` implement the main functionality for Assignment 8. The existing token contracts, scripts, and tests are retained from Assignment 7.
 
-### MyTokenV1.sol
+## 5. Smart Contract Design
 
-The first implementation provides ERC-20 token functionality.
+### 5.1. Owners and Access Control
 
-Features:
+The contract stores owner addresses in an array and uses a mapping to determine whether an address is an authorized owner.
 
-- Token name: `MyToken`
-- Token symbol: `MTK`
-- Initial supply: 1,000,000 MTK
-- 18 decimal places
-- Token transfers
-- Owner-restricted minting
-- UUPS upgrade authorization restricted to the owner
+The constructor validates that:
 
-The `initialize()` function initializes the token when the implementation is accessed through the proxy.
+- At least one owner is provided.
+- No owner address is the zero address.
+- Owner addresses are unique.
+- The confirmation threshold is greater than zero.
+- The threshold does not exceed the number of owners.
 
-### MyTokenV2.sol
+The `onlyOwner` modifier restricts transaction submission, confirmation, revocation, and execution to authorized owners.
 
-V2 inherits the functionality of V1 and introduces a `version()` function that returns `"V2"`.
+### 5.2. Transaction Data
 
-The upgrade demonstrates how new functionality can be introduced without changing the proxy address or losing existing token balances.
+Each transaction stores:
 
-### MyTokenProxy.sol
+- Recipient address.
+- Ether value.
+- Transaction data.
+- Execution status.
+- Number of confirmations.
 
-The proxy inherits OpenZeppelin's `ERC1967Proxy`.
+A separate mapping records whether each owner has confirmed a particular transaction. This prevents the same owner from confirming a transaction multiple times.
 
-It delegates calls to the current implementation and keeps the token state at the proxy address. The implementation can be changed through the UUPS upgrade mechanism.
+### 5.3. Transaction Lifecycle
 
-## 5. Local Development
+1. **Submission:** An owner proposes a transaction by specifying the recipient, Ether amount, and transaction data.
+2. **Confirmation:** Authorized owners independently confirm the proposed transaction.
+3. **Revocation:** An owner can revoke their confirmation before execution.
+4. **Execution:** An authorized owner can execute the transaction once the required confirmation threshold has been reached.
 
-### Compile the contracts
+A transaction cannot be executed before the threshold is reached or more than once.
+
+### 5.4. Main Functions
+
+| Function | Description |
+|---|---|
+| `submitTransaction()` | Creates a transaction proposal. |
+| `confirmTransaction()` | Records an owner's confirmation. |
+| `revokeConfirmation()` | Removes an owner's confirmation before execution. |
+| `executeTransaction()` | Executes an approved transaction. |
+| `getOwners()` | Returns the list of owners. |
+| `getTransactionCount()` | Returns the number of submitted transactions. |
+| `getTransaction()` | Returns the details of a transaction. |
+
+The public `owners`, `isOwner`, `requiredConfirmations`, `transactions`, and `isConfirmed` state variables provide access to relevant wallet information.
+
+The wallet accepts Ether through its `receive()` function.
+
+## 6. Events
+
+The contract emits events to record important operations:
+
+- `Deposit` — Ether received by the wallet.
+- `SubmitTransaction` — a transaction was submitted.
+- `ConfirmTransaction` — an owner confirmed a transaction.
+- `RevokeConfirmation` — an owner revoked a confirmation.
+- `ExecuteTransaction` — a transaction was executed successfully.
+
+Events provide an auditable record of wallet activity and can be monitored by blockchain applications and development tools.
+
+## 7. Local Development
+
+### 7.1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 7.2. Compile the Contracts
 
 ```bash
 npx hardhat compile
 ```
 
-### Run automated tests
+### 7.3. Run Automated Tests
 
 ```bash
 npx hardhat test
 ```
 
-### Start a local blockchain
+The tests run in the local Hardhat development environment and do not require Ether on a public network.
 
-In the first terminal:
+## 8. Automated Testing
 
-```bash
-npx hardhat node
-```
-
-Keep this terminal running while using the local network.
-
-### Deploy V1 and the proxy locally
-
-In a second terminal:
-
-```bash
-npx hardhat run scripts/deploy.ts --network localhost
-```
-
-### Transfer tokens locally
-
-```bash
-npx hardhat run scripts/transfer.ts --network localhost
-```
-
-### Upgrade to V2 locally
-
-```bash
-npx hardhat run scripts/upgrade.ts --network localhost
-```
-
-### Verify the local upgrade
-
-```bash
-npx hardhat run scripts/verify-upgrade.ts --network localhost
-```
-
-## 6. Automated Tests
-
-Automated tests are implemented in `test/UpgradeableToken.ts`.
+The multisignature wallet tests are implemented in `test/MultiSigWallet.ts`.
 
 The test suite covers:
 
-1. Assignment of the initial token supply to the owner.
-2. Transfers between accounts.
-3. Owner-authorized token minting.
-4. Rejection of minting attempts by non-owners.
-5. Upgrading from V1 to V2 while preserving balances and total supply.
+1. Initialization of owners and the confirmation threshold.
+2. Rejection of duplicate owners.
+3. Submission of a transaction by an owner.
+4. Execution only after the required confirmations.
+5. Revocation of a confirmation.
+6. Rejection of duplicate confirmations.
+7. Rejection of actions by non-owners.
+8. Rejection of nonexistent transactions.
+9. Rejection of a zero confirmation threshold.
+10. Rejection of a threshold greater than the number of owners.
+11. Rejection of the zero address as an owner.
+12. Rejection of revoking a confirmation that was never given.
+13. Rejection of execution when the wallet has insufficient funds.
+14. Rejection of an empty owners list.
+15. Verification of confirmation and revocation events.
+16. Rejection of repeated execution of a transaction.
+17. Verification that revoking one owner's confirmation preserves other owners' confirmations.
 
-All five Mocha tests passed in the local development environment.
+The existing `test/UpgradeableToken.ts` suite is also executed by the project test command.
 
-## 7. Sepolia Deployment
+**Latest local test result: 22 passing tests.**
 
-The contracts were deployed and tested on the Ethereum Sepolia test network.
+- MultiSigWallet: 17 tests.
+- Upgradeable MyToken: 5 tests.
+- Total: 22 tests.
 
-### Contract Addresses
+## 9. Deployment and Interaction
 
-| Contract | Address |
-|---|---|
-| V1 implementation | `0x93b3177c03D91FF0bD79bA2fDAf04f2f05A331Ff` |
-| Proxy | `0xa92681dC1B3FD9E125e9c9c42304a568532189C5` |
-| V2 implementation | `0x8f25C7E95b65ad16A37B9C0346aD368980d2ee39` |
+### 9.1. Deployment Parameters
 
-### Etherscan Links
+The wallet constructor accepts two parameters:
 
-- [V1 implementation](https://sepolia.etherscan.io/address/0x93b3177c03D91FF0bD79bA2fFDAf04f2f05A331Ff)
-- [Proxy contract](https://sepolia.etherscan.io/address/0xa92681dC1B3FD9E125e9c9c42304a568532189C5)
-- [V2 implementation](https://sepolia.etherscan.io/address/0x8f25C7E95b65ad16A37B9C0346aD368980d2ee39)
-- [Token transfer transaction](https://sepolia.etherscan.io/tx/0xf6c9cc79a2bf2ac16dbc10c982445e2db32737dfc9426a0486cc893f6a5ef71a)
-- [Upgrade transaction](https://sepolia.etherscan.io/tx/0xf7dfdc76e41f1400c1619e616f95c111bbb2940de70dea4d8d057911101bf61b)
+- `_owners` — an array of authorized owner addresses.
+- `_requiredConfirmations` — the minimum number of owner confirmations required for execution.
 
-## 8. Sepolia Verification Results
+The deployment script configures three local development accounts as owners and sets the confirmation threshold to two.
 
-The deployment and upgrade scripts completed successfully.
+### 9.2. Deployment Script
+
+The deployment script is implemented in `scripts/deploy-multisig.ts`.
+
+It deploys the `MultiSigWallet` contract using the configured Hardhat environment and prints:
+
+- The deployed contract address.
+- The addresses of the three owners.
+- The required confirmation threshold.
+
+Run the script from the project root:
+
+```bash
+npx hardhat run scripts/deploy-multisig.ts
+```
+
+The deployment script was executed successfully in the local development environment.
+
+**Local deployment result:**
 
 | Property | Result |
 |---|---|
-| Token name | MyToken |
-| Token symbol | MTK |
-| Initial total supply | 1,000,000 MTK |
-| Transfer amount | 100 MTK |
-| Owner balance after transfer | 999,900 MTK |
-| Recipient balance after transfer | 100 MTK |
-| Version after upgrade | V2 |
-| Total supply after upgrade | 1,000,000 MTK |
-| Owner balance after upgrade | 999,900 MTK |
-| Recipient balance after upgrade | 100 MTK |
-| Proxy address preserved | Yes |
+| Contract | MultiSigWallet |
+| Network | Local Hardhat network |
+| Owner count | 3 |
+| Required confirmations | 2 |
+| Contract address | `0x5FbDB2315678afecb367f032d93F642f64180aa3` |
 
-The verification script confirmed that the proxy exposes the V2 implementation and that the token balances and total supply were preserved.
+The displayed address belongs to the local Hardhat network. It is not a public Ethereum or Sepolia deployment address.
 
-## 9. Conclusion
+### 9.3. Interacting with the Wallet
 
-This assignment demonstrates the development, deployment, and testing of an upgradeable ERC-20 token using the UUPS upgradeability pattern.
+An authorized owner can submit a transaction:
 
-The V1 implementation was deployed behind an ERC-1967 proxy. A transfer of 100 MTK was completed on Sepolia, after which the proxy was upgraded to V2.
+```typescript
+await wallet.submitTransaction(
+  recipientAddress,
+  ethers.parseEther("1"),
+  "0x"
+);
+```
 
-The upgrade preserved the proxy address, token balances, and total supply. The new `version()` function returned `"V2"`.
+Owners can confirm the transaction using its index:
 
-The project includes deployment, transfer, upgrade, and verification scripts, together with automated tests for the main token functionality.
+```typescript
+await wallet.confirmTransaction(0);
+```
+
+An owner can revoke their confirmation before execution:
+
+```typescript
+await wallet.revokeConfirmation(0);
+```
+
+Once the required confirmation threshold has been reached, an owner can execute the transaction:
+
+```typescript
+await wallet.executeTransaction(0);
+```
+
+These examples illustrate the interaction sequence. Every operation must be sent by an authorized owner, and the wallet must have sufficient Ether to complete a transfer.
+
+## 10. Security Considerations
+
+### 10.1. Owner Validation
+
+The constructor rejects an empty owner list, duplicate addresses, zero addresses, and invalid confirmation thresholds.
+
+### 10.2. Authorization
+
+Only registered owners can submit, confirm, revoke, or execute transactions. Unauthorized calls revert.
+
+### 10.3. Confirmation Integrity
+
+Each owner can confirm a transaction only once. Revocation updates the confirmation mapping and count, preserving confirmations belonging to other owners.
+
+### 10.4. Execution Threshold
+
+Transactions cannot be executed until the configured confirmation threshold is reached.
+
+### 10.5. Checks-Effects-Interactions
+
+The execution function marks a transaction as executed before making the external call. If the call fails, the transaction reverts, including the execution-status change.
+
+This follows the checks-effects-interactions pattern and helps prevent repeated execution of the same transaction during an external call.
+
+### 10.6. Failed Execution
+
+If the wallet has insufficient Ether or the external call fails, execution reverts. The transaction is not left marked as successfully executed.
+
+### 10.7. Limitations
+
+- Owners cannot be added or removed after deployment.
+- The contract does not implement ERC-20 token transfers.
+- There is no transaction cancellation mechanism after submission.
+- The implementation has not undergone a professional security audit.
+- Automated tests cannot guarantee the absence of vulnerabilities.
+- The implementation does not include the advanced features of production multisig wallets, such as Safe modules or flexible owner management.
+
+This contract is an educational implementation and should not be treated as a production-ready wallet without further review and auditing.
+
+## 11. Conclusion
+
+This assignment demonstrates the implementation and testing of a multi-signature wallet using Solidity and Hardhat 3.
+
+The wallet requires approval from multiple authorized owners before executing Ether transfers. It supports transaction submission, confirmation, revocation, execution, event logging, and access control.
+
+The deployment script was successfully executed on the local Hardhat network with three owners and a confirmation threshold of two.
+
+The complete project test suite passed 22 tests in the local development environment, covering the primary transaction lifecycle, authorization rules, invalid initialization parameters, failed execution, and additional edge cases.
+
+The project demonstrates how multisignature authorization can reduce dependence on a single account and improve control over shared blockchain funds.
